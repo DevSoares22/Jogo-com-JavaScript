@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Jogo</h1>
+    </header>
+    <main>
+        <section id="jogo">
+            <!-- Conteúdo do jogo será adicionado aqui -->
+             <p id="texto"></p>
+             <div id="opcoes"></div>
+             <div id ="minigame" style="display: block;">
+                <p id="status"></p>
+        </section>
+    </main> 
+    <footer>
+        <p>&copy;2026 Rafaela K S Soares</p>
+    </footer>
+<script>
+    const nome = localStorage.getItem("nomeSubordinado") || "Desconhecido";
+    const texto = document.getElementById("texto");
+    const opcoes = document.getElementById("opcoes"); 
+
+    let cliques = 0; // Variável para contar os cliques no minigame
+    let tempoRestante = 10; // Tempo restante para conseguir o atestado (em segundos)
+    let intervalo; // Variável para armazenar o intervalo do minigame
+    let atestados = 0; // Variável para contar os atestados conseguidos
+    let tempoNaoClicar;
+    let falhou = false;
+    let erros = 0;
+    let gameOverFlag = false;
+
+    // Iniciar o jogo
+    inicio();
+
+ 
+function inicio() {
+    
+    atualizarStatus();
+    console.log("Status atualizado");
+
+    texto.innerText = nome + ", está cansado do seu chefe Rodolfo. O que pretende fazer hoje?";
+    
+    opcoes.innerHTML = `
+        <button onclick="demissao()">Pedir demissão</button>
+        <button onclick="provocar()">Tentar ser demitido</button>
+        <button onclick="processar()">Processar a empresa</button>
+    `;
+}
+
+// opções
+function demissao() {
+    texto.innerText = "Você pediu demissão... e perdeu seus direitos 😢";
+    opcoes.innerHTML = "<button onclick='inicio()'>Recomeçar</button>";
+}
+
+function provocar() {
+    texto.innerText = "Você começou a provocar seu chefe...";
+    
+    opcoes.innerHTML = `
+        <button onclick="Preguiça()">Fazer hora no banheiro</button>
+        <button onclick="fingirDoenca()">Fingir doença</button>
+        <button onclick="erroGrave()">Cometer um erro grave</button>
+    `;
+}
+
+function Preguiça() {
+    texto.innerText = "Você está fazendo hora no banheiro...";
+    opcoes.innerHTML = `
+    <button onclick="tentarFugir()">Tentar fugir</button>
+    <button onclick="fingirDoenca()">Fingir doença</button>
+    <button onclick='ficar1h()'>Ficar 1h </button>`;
+
+}
+function ficar1h() {
+    texto.innerText = nome + " ficou 1h no banheiro, Rodolfo ficou desconfiado e te mandou voltar a trabalhar, o que você faz?";
+    opcoes.innerHTML = `
+    <button onclick="fingirDoenca()">Fingir doença</button>
+    <button onclick="mentir()">Mentir</button>
+    <button onclick='desistir()'>Voltar a trabalhar</button>`;
+}
+function mentir() {
+    texto.innerText = nome + " inventou uma mentira e disse que estava passando mal, Rodolfo não acreditou e te mandou voltar a trabalhar, o que você faz?";
+    opcoes.innerHTML = `
+    <button onclick="mentir2()">Investir na Mentira</button>
+    <button onclick='desistir()'>Voltar a trabalhar</button>`;
+}
+function mentir2() {
+    texto.innerText = nome + " continuou mentindo. Tente fazer Rodolfo acreditar na sua mentira!";
+    
+    opcoes.innerHTML = ""
+    minigameNaoClicar(); // CHAMANDO o minigame
+}
+function minigameNaoClicar() {
+    falhou = false;
+
+    let tempo = 5;
+
+    texto.innerText = "NÃO CLIQUE EM NADA!!!";
+    
+    opcoes.innerHTML = `
+        <p id="contadorTempo">Tempo: 5</p>
+    `;
+
+    // 👉 ativa efeito piscando
+    document.body.classList.add("piscando");
+
+    // 👉 evita clicar no botão inicial
+    setTimeout(() => {
+        document.addEventListener("click", perderNaoClicar);
+    }, 200);
+
+    let mensagens = [
+        "NÃO CLIQUE EM NADA!!!",
+        "CLIQUE AGORA!!! 😈",
+        "Não clica...",
+        "CLIQUE!!!",
+        "Confia em mim 👀"
+    ];
+
+    tempoNaoClicar = setInterval(() => {
+        tempo--;
+
+        // muda mensagem
+        let msg = mensagens[Math.floor(Math.random() * mensagens.length)];
+        texto.innerText = msg;
+
+        document.getElementById("contadorTempo").innerText = "Tempo: " + tempo;
+
+        if (tempo <= 0) {
+            clearInterval(tempoNaoClicar);
+            ganharNaoClicar();
+        }
+    }, 1000);
+}
+function perderNaoClicar() {
+    if(!falhou){
+        falhou = true;
+        clearInterval(tempoNaoClicar);
+        document.removeEventListener("click", perderNaoClicar);
+        erros++;
+        if(erros >= 3){
+            gameOver();
+        } else {
+        texto.innerText = "Você clicou... Rodolfo não acreditou na sua mentira, te deu uma advertencia e te mandou voltar a trabalhar 😢";
+        opcoes.innerHTML = "<button onclick='inicio()'>Voltar ao trabalho</button>";
+    }
+}
+}
+function gameOver() {
+    texto.innerText = "Rodolfo percebeu tudo e te demitiu por justa causa ";
+
+    opcoes.innerHTML = `
+    <button onclick="reiniciarJogo()">Jogar novamente</button>`;
+}
+function reiniciarJogo() {
+    erros = 0; 
+    atualizarStatus();
+    atestados = 0; 
+    atualizarStatus(); 
+
+    inicio();
+}
+function atualizarStatus(){
+    document.getElementById("status").innerText = "Atestados: "+ atestados + "/3 | Erros: "+ erros +"/3";
+}
+
+    
+function ganharNaoClicar() {
+        document.addEventListener("click",perderNaoClicar);
+        document.body.classList.remove("piscando");
+
+        texto.innerText = "Você conseguiu não clicar! Rodolfo acreditou na sua mentira e te deixou trabalhar de boa hoje... mas cuidado, se ele desconfiar de novo, pode ser pior!";
+
+        setTimeout(()=>{
+            continuarHistoria2();
+        },1500); // espera 1.5s
+
+}  
+function continuarHistoria2(){
+    opcoes.innerHTML = "<button onclick='inicio()'>Continuar trabalhando</button>";
+}
+
+
+function tentarFugir() {
+    texto.innerText = nome + " tentou fugir, pela janela, mas ficou preso. O que fazer?";
+    opcoes.innerHTML = `
+    <button onclick="socorro()">Pedir socorro</button>
+    <button onclick="Fugir2()">Tentar fugir de novo</button>`;
+}
+function socorro() {
+    texto.innerText = "Funcionario Gabriel te ouviu gritar e e ameaçou contar para Rodolfo, o que você faz? ";
+    opcoes.innerHTML = `<button onclick='briga()'>Bater no Gabriel</button>
+    <button onclick='mentira()'>Inventar uma mentira</button>`
+    ;
+}
+function briga() {
+    texto.innerText = nome + " bateu no Gabriel, ele desmaiou e agora precisa resolver a situação...";
+    opcoes.innerHTML = ` 
+        <button onclick='confusão()'>Esconde-lo</button>
+        <button onclick='ajudar()'>Ajudar o Gabriel</button>
+        <button onclick='fugir3()'>Dane-se o Gabriel e foge</button>
+        `;
+
+}
+function confusão() {
+    texto.innerText = nome + " tentou esconder o Gabriel, mas a faxineira viu e ligou para a policia";
+    opcoes.innerHTML = `
+    <button onclick='confissão()'>Tentar se explicar</button>
+    <button onclick='procurado()'>Fugir</button>`;
+}
+function confissão() {
+    texto.innerText = nome + " confessou, o que fez e Rodolfo te manda embora por justa causa por bater no bielzinho ❌";
+    opcoes.innerHTML = "<button onclick='fimDeJogo()'>Fim de Jogo</button>";
+}
+function procurado() {
+    texto.innerText = nome +" agora é fora da lei e procurado por todo país como uma pessoa perigosa por bater no bielzinho ❌";
+    opcoes.innerHTML = "<button onclick='fimDeJogo()'>Fim de Jogo</button>";
+}
+function ajudar() {
+    texto.innerText = nome + " ajudou o Gabriel e virou o Heroi da empresa, Rodolfo te deu um bombom como recompensa ";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar de novo</button>";
+}
+function fugir3() {
+    texto.innerText = nome + "  tentou fugir, mas quando Gabriel acordou ele contou tudo e além de ser mandado embora por justa causa, Gabriel te processou ❌";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar de novo</button>";
+}
+function erroGrave() {
+    texto.innerText = "Você exagerou e foi demitido por justa causa ❌";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+
+function fingirDoenca() {
+    texto.innerText = "Rodolfo quer saber o que você tem...";
+    opcoes.innerHTML = `
+        <button onclick="fingirGripe()">Fingir gripe</button>
+        <button onclick="fingirDor()">Fingir dor de cabeça</button>
+        <button onclick="fingirDoencaGrave()">Fingir doença grave</button>
+    `;
+}
+function fingirGripe() {
+    texto.innerText = "Rodolfo não te dar muita atenção e te deixa trabalhar mesmo com a gripe...";
+    opcoes.innerHTML = `
+    <button onclick="fingirGripe2()">continuar fingindo</button>
+    <button onclick='desistir()'>Voltar a trabalhar</button>
+`;
+}
+function fingirGripe2() {
+    texto.innerText = "Rodolfo duvida da sua gripe";
+    opcoes.innerHTML = `
+    <button onclick="fugir()">Tentar fugir</button>
+    <button onclick="fingirgripe3()">Continuar fingindo</button>
+    <button onclick='desistir()'>Voltar a trabalhar</button>
+`;
+}
+function fingirgripe3() {
+    texto.innerText = "Rodolfo suspira e manda você ir ao médico";
+    opcoes.innerHTML = `
+    <button onclick="medico()">Ir ao médico</button>
+    <button onclick='fugir2()'>Fugir</button>
+    `;
+}
+function medico() {
+    texto.innerHTML = " Tente ganhar o atestado do médico!"    
+    opcoes.innerHTML = "";
+    minigame(); // CHAMANDO o minigame
+}
+function minigame(){
+    cliques = 0; // Reiniciar a contagem de cliques
+    tempoRestante = 10; // Reiniciar o tempo restante
+
+    document.getElementById("minigame").style.display = "block";
+    texto.innerText = "Clique o máximo que puder em 10 segundos!";
+
+    opcoes.innerHTML = `
+    <p>Cliques: <span id="contador">0</span></p>
+    <p>Tempo restante: <span id="tempo">10</span> segundos</p>
+    <button id= "botaoFuja" onclick="clicar()">CLIQUE AQUI</button>
+    `;
+    intervalo = setInterval(atualizarTempo, 1000); // Atualiza o tempo a cada segundo
+}
+    function clicar() {
+        cliques++;
+        document.getElementById("contador").innerText = cliques;
+
+        moverBotao(); // Move o botão para uma posição aleatória
+    }
+    function moverBotao() {
+        const botao = document.getElementById("botaoFuja");
+        const larguraTela = window.innerWidth - botao.offsetWidth;
+        const alturaTela = window.innerHeight - botao.offsetHeight;
+
+        const posX = Math.random() * larguraTela;
+        const posY = Math.random() * alturaTela;
+
+        botao.style.left = posX + "px";
+        botao.style.top = posY + "px";
+    }
+    function atualizarTempo() {
+        tempoRestante--;
+        document.getElementById("tempo").innerText = tempoRestante;
+        if (tempoRestante <= 0) {
+            clearInterval(intervalo);
+            finalizarMinigame();
+        }
+    }
+    function finalizarMinigame() {
+        document.getElementById("minigame").style.display = "none";
+        if (cliques >= 10) {   // Supondo que 20 cliques sejam necessários para conseguir o atestado
+            atestados++;
+            atualizarStatus();
+            texto.innerText = "Você conseguiu o atestado! 🎉("+atestados+"/3)";
+             opcoes.innerHTML = "<button onclick='continuarHistoria()'>Proximo dia</button>";
+    
+        } else {
+            atestados = 0; // Reiniciar a contagem de atestados
+            texto.innerText = "Você não conseguiu o atestado... Rodolfo não acredita na sua gripe e te manda voltar a trabalhar 😢";
+            opcoes.innerHTML = "<button onclick='inicio()'>Volte ao trabalho</button>";
+
+        }
+    }    
+function continuarHistoria() {
+    if (atestados >= 3) {
+        texto.innerText = "Com os atestados em mãos, você conseguiu convencer Rodolfo a te demitir! 🎉";
+        opcoes.innerHTML = "<button onclick='fimdejogo()'>Fim de jogo</button>";
+    } else {
+        texto.innerText = "Você ainda precisa de mais atestados para conseguir.";
+        opcoes.innerHTML = "<button onclick='medico()'>Tentar ganhar mais atestados</button>";
+    }
+}
+
+
+function fingirDor() {
+    texto.innerText = "Rodolfo acredita que você tem dor de cabeça e te deixa trabalhar...";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+
+function fingirDoencaGrave() {
+    texto.innerText = "Rodolfo acredita que você tem uma doença grave e te demite por justa causa ❌";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+
+function processar() {
+    texto.innerText = "Você decidiu processar a empresa...";
+    
+    opcoes.innerHTML = `
+        <button onclick="comProvas()">Com provas</button>
+        <button onclick="semProvas()">Sem provas</button>
+    `;
+}
+
+function comProvas() {
+    texto.innerText = "O processo foi aberto. Rodolfo se irritou mas pensou em dar uma segunda chance se desistir do processo";
+    opcoes.innerHTML = `
+    <button onclick='segundachance()'>Aceitar a segunda chance</button>
+    <button onclick='continuarProcesso()'>Continuar com o processo</button>`;
+}
+function segundachance() {
+    texto.innerText = `${nome} aceitou a segunda chance... com o passar do tempo ele arrumou uma maneira para demitir ${nome} por justa causa e te mandou embora😢`;
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+function continuarProcesso() {
+    texto.innerText = `Chegou o dia do julgamento, quais destas acusações ${nome} tem provas para provar?`;
+    opcoes.innerHTML = `
+    <button onclick='assediomoral()'>Assédio Moral</button>
+    <button onclick='assediosexual()'>Assédio Sexual</button>
+    <button onclick='desviodefuncao()'>Desvio de Função</button>`;
+}
+function assediomoral() {
+    texto.innerText = `${nome} acusa Rodolfo de assédio moral, o juiz pede provas...`;
+    opcoes.innerHTML = `<button onclick='provasAssedioMoral()'>Apresentar provas</button>
+<button onclick='semProvas()'>Não tem provas</button>`;
+}
+function provasAssedioMoral() {
+    texto.innerText = `${nome} apresentou provas mas não concretas `;
+    opcoes.innerHTML = `<button onclick='desistir()'>Desistir</button>
+    <button onclick='continuarProcesso2()'>Continuar processo</button>`
+    ;
+}
+function desistir() {
+    texto.innerText = `${nome} desistiu do processo, passou vergonha na frente de todos, Rodolfo aproveitou o momento e comprou o juiz que ficou zangado por perder tempo e te deu uma multa para pagar para Rodolfo 😢`;
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+function continuarProcesso2() {
+    texto.innerText = "O processo continua, mas sem provas concretas, o juiz não tem como condenar Rodolfo e te dá uma multa para pagar para ele 😢";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+function assediosexual() {
+    texto.innerText = `${nome} acusa Rodolfo de assédio sexual, o juiz pede provas...`;
+    opcoes.innerHTML = `<button onclick='provasAssedioSexual()'>Apresentar provas</button>`
+}
+function provasAssedioSexual() {
+    texto.innerText = `${nome} chamou as testemunhas e apresentou mensagens, mas Rodolfo negou tudo e o juiz não tem como condenar sem provas concretas...`;
+    opcoes.innerHTML = `<button onclick='desistir()'>Desistir</button>
+    <button onclick='continuarProcesso3()'>Continuar processo</button>`
+    ;
+}
+function continuarProcesso3() {
+    texto.innerText = "O processo continua, mas sem provas concretas, o juiz não tem como condenar Rodolfo e te dá uma multa para pagar para ele 😢";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+function desviodefuncao() {
+    texto.innerText = `${nome} acusa Rodolfo de desvio de função, o juiz pede provas...`;
+    opcoes.innerHTML = `<button onclick='provasDesvioFuncao()'>Apresentar provas</button>
+    <button onclick='semProvas()'>Não tem provas</button>`;
+}
+function provasDesvioFuncao() {
+    texto.innerText = `${nome} apresentou provas de desvio de função...`;
+    opcoes.innerHTML = `<button onclick='desistir()'>Desistir</button>
+    <button onclick='continuarProcesso4()'>Continuar processo</button>`
+    ;
+}
+function continuarProcesso4() {
+    texto.innerText = "Rodolfo pede para Gabriel testemunhar ao seu favor.";
+    opcoes.innerHTML = 
+    `<button onclick='gabriel()'>Dizer que Gabriel está mentindo </button>
+    <button onclick='continuarProcesso5()'> Chamar uma testemunha </button>`;
+}
+function gabriel() {
+    texto.innerText = "Gabriel testemunhou que você estava sempre no banheiro e que não fazia nada, o juiz acredita em Gabriel e pede para voce se explicar";
+    opcoes.innerHTML = `<button onclick='desistir2()'>A casa vai cai, melhor fugir!</button>
+    <button onclick='continuarProcesso6()'>Tentar se explicar</button>`;
+}
+
+function semProvas() {
+    texto.innerText = "Sem provas... você perdeu o processo 😢";
+    opcoes.innerHTML = "<button onclick='inicio()'>Tentar novamente</button>";
+}
+</script>
+</body>
+</html>

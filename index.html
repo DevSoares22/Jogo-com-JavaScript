@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Jogo: CLT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>CLT</h1>
+</header>
+<section>
+    <div id="msg">
+        <p>Qual vai ser o nome do seu subordinado?</p>
+        <input type="text" id="nomeSubordinado" placeholder="Digite o nome">
+        <!--<a href="historia.html" target="_self">-->
+        <button onclick="ir()">Iniciar Jogo</button></a>
+    </div>
+</section>
+<footer>
+    <p>&copy;2026 Rafaela K S Soares</p>
+</footer>
+<script> 
+   function ir() {
+    const nomeSubordinado = document.getElementById("nomeSubordinado").value;
+    localStorage.setItem("nomeSubordinado", nomeSubordinado);
+    window.location.href = "historia.html";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>História</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>História</h1>
+    </header>
+    <section>
+     <p id="historia"></p>
+        <button id="btnContinuar">continuar</button>
+
+    </section>
+    <div id="jogo"></div>
+    <footer>
+    <p>&copy;2026 Rafaela K S Soares</p>
+</footer>
+<script>
+    let nomeSubordinado = localStorage.getItem("nomeSubordinado") || "Desconhecido";
+    const historiaElement = document.getElementById("historia");
+    document.getElementById("historia").innerText = `Era uma vez um subordinado chamado ${nomeSubordinado}, que estava infeliz e precisa sair, mas se sair por justa causa perde, se desistir perde,se for demitido sem justa causa ganha e se processar a empresa ganha(caso tenha provas que o faça ganhar).
+    
+    Rodolfo Silva é o nome do chefe, ele é um tirano e não te deixa sair, por ser bom funcionario e por ser um numero (sem voce a empresa perde dinheiro). Ele nao aceita admitir que está errado, se ele errar na verdade a culpa é sua, ele perdeu um olho e usa um tapa olho e seduz suas funcionarias casadas ou solteiras.
+    
+    Dificuldades: 
+    ${nomeSubordinado} tem estabilidade;
+    ${nomeSubordinado} tem dividas;
+    Rodolfo tem puxa sacos;`;
+    const btnContinuar = document.getElementById("btnContinuar");
+    btnContinuar.addEventListener("click", function() {
+       window.location.href = "jogo.html";
+    });
+</script>
+</body>
+</html>
